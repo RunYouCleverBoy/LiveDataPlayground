@@ -9,5 +9,5 @@ import androidx.room.RoomDatabase
  */
 @Database(entities = [OneMovieEntity::class], version = 1)
 abstract class MoviesDatabase : RoomDatabase() {
-    abstract fun discoverDao(): EntitiesDao
+    abstract fun moviesListDao(): EntitiesDao
 }
