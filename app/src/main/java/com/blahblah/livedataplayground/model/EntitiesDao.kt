@@ -9,7 +9,7 @@ import androidx.room.*
  */
 @Dao
 interface EntitiesDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(oneMovieEntity: OneMovieEntity)
 
     @Update
@@ -18,9 +18,9 @@ interface EntitiesDao {
     @Delete
     fun delete(oneMovieEntity: OneMovieEntity)
 
-    @Query("SELECT * FROM Discover where movieName like :name")
-    fun findMovieByName(name: String): LiveData<List<OneMovieEntity>>
+    @Query("SELECT * FROM MovieEntry where movieName like :name limit :count offset :fromRow")
+    fun findMovieByName(name: String, fromRow: Int = 0, count: Int = 10): LiveData<List<OneMovieEntity>>
 
-    @Query("SELECT * FROM Discover")
-    fun getAllMovies(): LiveData<List<OneMovieEntity>>
+    @Query("SELECT * FROM MovieEntry limit :count offset :fromRow")
+    fun getAllMovies(fromRow: Int = 0, count: Int = 10): LiveData<List<OneMovieEntity>>
 }

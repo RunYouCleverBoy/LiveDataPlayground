@@ -6,33 +6,50 @@ import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
 import com.blahblah.livedataplayground.model.MoviesDatabase
 import com.blahblah.livedataplayground.model.OneMovieEntity
+import com.blahblah.livedataplayground.model.TMDBApi
+import com.blahblah.livedataplayground.utils.CoroutineWrapper
 
 /**
  * Description:
  * Created by shmuel on 27.2.19.
  */
-class MoviesViewModel(application: Application) : AndroidViewModel(application) {
-    val database: MoviesDatabase
-    val moviesListLiveData: MutableLiveData<List<OneMovieEntity>>
+class MoviesViewModel private constructor(application: Application) : AndroidViewModel(application) {
+    private val coroutine = CoroutineWrapper()
+    private val database: MoviesDatabase =
+        Room.databaseBuilder(application, MoviesDatabase::class.java, "movies_property_db").build()
+    private val tmdbDriver = TMDBApi(application)
 
+    data class DataChunk(val firstPosition: Int, val data: List<OneMovieEntity>)
+
+    val moviesListPage: MutableLiveData<DataChunk>
 
     init {
-        database = Room.databaseBuilder(application, MoviesDatabase::class.java, "movies_property_db").build()
-        moviesListLiveData = MutableLiveData(database.moviesListDao().getAllMovies().value ?: listOf())
+        val initialData = database.moviesListDao().getAllMovies(0, 10).value ?: listOf()
+        moviesListPage = MutableLiveData(DataChunk(0, initialData))
+        fetch()
     }
 
-//
-//    @WorkerThread
-//    fun refreshData() {
-//        repeat(1000) { i ->
-//            OneMovieEntity().apply {
-//                id = i + System.nanoTime().toInt()
-//                imageUri =
-//                    "https://images.pexels.com/photos/1161682/pexels-photo-1161682.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
-//                movieName = "Movie-$i"
-//                synopsis = "Once upon a time there was a movie $movieName"
-//            }.also { database.discoverDao().insert(it) }
-//        }
-//        moviesListLiveData.postValue(database.discoverDao().getAllMovies().value)
-//    }
+    fun fetch(firstPosition: Int = 0) {
+        coroutine.launch {
+            // Fetch a little bit before, and
+            val dataFromDb = database.moviesListDao().getAllMovies(firstPosition, PAGE_SIZE).value
+            val data = if (dataFromDb?.size ?: 0 < PAGE_SIZE) {
+                val backendPage = dataFromDb?.lastOrNull()?.cameFromPage ?: 0
+                val data = tmdbDriver.getList(backendPage + 1)
+                data.also { it.forEach { item -> database.moviesListDao().insert(item) } }
+            } else {
+                dataFromDb
+            } ?: listOf()
+            moviesListPage.postValue(DataChunk(firstPosition, data))
+        }
+    }
+
+    companion object {
+        fun init(application: Application): MoviesViewModel {
+            return MoviesViewModel(application).also { instance = it }
+        }
+
+        var instance: MoviesViewModel? = null
+        private const val PAGE_SIZE = 20
+    }
 }

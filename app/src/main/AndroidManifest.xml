@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools" package="com.blahblah.livedataplayground">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
             android:allowBackup="false"
             android:icon="@mipmap/ic_launcher"
@@ -9,7 +10,6 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme" tools:ignore="GoogleAppIndexingWarning">
-        <meta-data android:name="com.blahblah.livedataplayground.movieDbKey" android:value="@string/tmdbKey"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
