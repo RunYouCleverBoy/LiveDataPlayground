@@ -1,6 +1,5 @@
 package com.blahblah.livedataplayground.fragments.adapters
 
-import android.net.Uri
 import android.util.LruCache
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -38,9 +37,7 @@ class GalleryFragmentAdapter(viewModel: MoviesViewModel) :
     override fun getItemCount() = dataSize
     override fun onBindViewHolder(holder: EntryViewHolder, position: Int) {
         // TODO: Glide
-        val url = Uri.parse("https://image.tmdb.org/t/p/w185")
-            .buildUpon().appendPath(cache[position].posterUri).build()
-            .toString()
+        val url: String = cache[position].posterUri
         Picasso.get().load(url).into(holder.imageView)
     }
 

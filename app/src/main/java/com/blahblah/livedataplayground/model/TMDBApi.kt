@@ -1,7 +1,7 @@
 package com.blahblah.livedataplayground.model
 
 import android.content.Context
-import android.content.pm.PackageManager
+import com.blahblah.livedataplayground.R
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONException
@@ -12,9 +12,9 @@ import org.json.JSONObject
  * Created by shmuel on 28.2.19.
  */
 class TMDBApi(context: Context) {
-    private val metadata =
-        context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA).metaData
-    private val apiKey = metadata.getString("${context.packageName}.movieDbKey")
+    //    private val metadata =
+//        context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA).metaData
+    private val apiKey = context.getString(R.string.tmbdKey)
     private val baseUrl = "https://api.themoviedb.org/"
     private val client = OkHttpClient()
     private fun query(page: Int) = "${baseUrl}3/discover/movie?page=$page&api_key=$apiKey"
@@ -30,19 +30,27 @@ class TMDBApi(context: Context) {
                 OneMovieEntity().apply {
                     val movieJson = moviesJson.optJSONObject(i)
                     id = movieJson.optInt("id", 0)
-                    backdropUri = thumbnailsBaseUrl + movieJson.optString("backdrop_path", "")
-                    posterUri = thumbnailsBaseUrl + movieJson.optString("poster_path", "")
+                    backdropUri = movieJson.optString("backdrop_path", "").addToIfNotEmpty(thumbnailsBaseUrl)
+                    posterUri = movieJson.optString("poster_path", "").addToIfNotEmpty(thumbnailsBaseUrl)
                     synopsis = movieJson.optString("overview", "N/A")
                     movieName = movieJson.optString("title", "N/A")
                     popularity = movieJson.optDouble("popularity", 0.0)
                     cameFromPage = page
                 }
             }
-        } catch (jsonException: JSONException) {
+        } catch (exception: JSONException) {
             listOf()
         }
 
 
+    }
+}
+
+private fun String.addToIfNotEmpty(prefix: String): String {
+    return if (prefix.isNotEmpty()) {
+        prefix + this
+    } else {
+        ""
     }
 }
 

@@ -8,6 +8,9 @@ import com.blahblah.livedataplayground.model.MoviesDatabase
 import com.blahblah.livedataplayground.model.OneMovieEntity
 import com.blahblah.livedataplayground.model.TMDBApi
 import com.blahblah.livedataplayground.utils.CoroutineWrapper
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
+
 
 /**
  * Description:
@@ -21,6 +24,7 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
 
     data class DataChunk(val firstPosition: Int, val data: List<OneMovieEntity>)
 
+
     val moviesListPage: MutableLiveData<DataChunk>
 
     init {
@@ -30,13 +34,21 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
     }
 
     fun fetch(firstPosition: Int = 0) {
-        coroutine.launch {
-            // Fetch a little bit before, and
-            val dataFromDb = database.moviesListDao().getAllMovies(firstPosition, PAGE_SIZE).value
+        coroutine.launchUI {
+            val dataFromDb = suspendCoroutine<List<OneMovieEntity>?> { continuation ->
+                // Fetch a little bit before, and
+                val allMovies = database.moviesListDao().getAllMovies(firstPosition, PAGE_SIZE)
+                allMovies.observeForever { t -> continuation.resume(t) }
+            }
+
             val data = if (dataFromDb?.size ?: 0 < PAGE_SIZE) {
                 val backendPage = dataFromDb?.lastOrNull()?.cameFromPage ?: 0
-                val data = tmdbDriver.getList(backendPage + 1)
-                data.also { it.forEach { item -> database.moviesListDao().insert(item) } }
+                val data = coroutine.withContext { tmdbDriver.getList(backendPage + 1) }
+                data.also {
+                    it.forEach { item ->
+                        database.moviesListDao().insert(item)
+                    }
+                }
             } else {
                 dataFromDb
             } ?: listOf()

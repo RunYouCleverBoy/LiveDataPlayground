@@ -12,6 +12,6 @@ import kotlinx.coroutines.launch
 class CoroutineWrapper(private val scope: CoroutineScope = GlobalScope) {
     fun launchUI(f: suspend CoroutineScope.() -> Unit) = scope.launch(Dispatchers.Main, block = f)
     fun launch(f: suspend CoroutineScope.() -> Unit) = scope.launch(Dispatchers.Default, block = f)
-    suspend fun withContext(f: suspend CoroutineScope.() -> Unit) =
+    suspend fun <T> withContext(f: suspend CoroutineScope.() -> T) =
         kotlinx.coroutines.withContext(scope.coroutineContext, block = f)
 }
