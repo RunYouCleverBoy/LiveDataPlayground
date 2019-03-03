@@ -42,13 +42,14 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
                 return@launchUI
             }
             currentRequest = positionRange
+            val intervalSize = Math.max(PAGE_SIZE, positionRange.last - positionRange.first + 1)
             val dataFromDb = suspendCoroutine<List<OneMovieEntity>?> { continuation ->
                 // Fetch a little bit before, and
-                val allMovies = database.moviesListDao().getAllMovies(positionRange.first, PAGE_SIZE)
+                val allMovies = database.moviesListDao().getAllMovies(positionRange.first, intervalSize)
                 allMovies.observeForever { t -> continuation.resume(t) }
             }
 
-            val data = if (dataFromDb?.size ?: 0 < PAGE_SIZE) {
+            val data = if (dataFromDb?.size ?: 0 < intervalSize) {
                 val backendPage = dataFromDb?.lastOrNull()?.cameFromPage ?: 0
                 coroutine.withContext {
                     val data = tmdbDriver.getList(backendPage + 1)
