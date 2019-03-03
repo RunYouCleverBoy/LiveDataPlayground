@@ -27,8 +27,12 @@ class GalleryFragment : Fragment() {
         }
         val view = inflater.inflate(R.layout.gallery_layout, container, false)
         val gallery: RecyclerView = view.findViewById(R.id.galleryRecycler)
-        gallery.adapter = GalleryFragmentAdapter(viewModel ?: return null)
+        gallery.adapter = GalleryFragmentAdapter(viewModel ?: return null, this::onWantMore)
         gallery.layoutManager = GridLayoutManager(activity, numColumns)
         return view
+    }
+
+    private fun onWantMore(position: IntRange) {
+        viewModel?.fetch(position)
     }
 }

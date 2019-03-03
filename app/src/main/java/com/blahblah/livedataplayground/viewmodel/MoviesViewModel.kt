@@ -8,6 +8,8 @@ import com.blahblah.livedataplayground.model.MoviesDatabase
 import com.blahblah.livedataplayground.model.OneMovieEntity
 import com.blahblah.livedataplayground.model.TMDBApi
 import com.blahblah.livedataplayground.utils.CoroutineWrapper
+import kotlinx.coroutines.asCoroutineDispatcher
+import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -17,7 +19,7 @@ import kotlin.coroutines.suspendCoroutine
  * Created by shmuel on 27.2.19.
  */
 class MoviesViewModel private constructor(application: Application) : AndroidViewModel(application) {
-    private val coroutine = CoroutineWrapper()
+    private val coroutine = CoroutineWrapper(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
     private val database: MoviesDatabase =
         Room.databaseBuilder(application, MoviesDatabase::class.java, "movies_property_db").build()
     private val tmdbDriver = TMDBApi(application)
@@ -33,26 +35,31 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
         fetch()
     }
 
-    fun fetch(firstPosition: Int = 0) {
+    var currentRequest: IntRange? = null
+    fun fetch(positionRange: IntRange = 0 until PAGE_SIZE) {
         coroutine.launchUI {
+            if (currentRequest?.let { positionRange.first in it && positionRange.last in it } == true) {
+                return@launchUI
+            }
+            currentRequest = positionRange
             val dataFromDb = suspendCoroutine<List<OneMovieEntity>?> { continuation ->
                 // Fetch a little bit before, and
-                val allMovies = database.moviesListDao().getAllMovies(firstPosition, PAGE_SIZE)
+                val allMovies = database.moviesListDao().getAllMovies(positionRange.first, PAGE_SIZE)
                 allMovies.observeForever { t -> continuation.resume(t) }
             }
 
             val data = if (dataFromDb?.size ?: 0 < PAGE_SIZE) {
                 val backendPage = dataFromDb?.lastOrNull()?.cameFromPage ?: 0
-                val data = coroutine.withContext { tmdbDriver.getList(backendPage + 1) }
-                data.also {
-                    it.forEach { item ->
-                        database.moviesListDao().insert(item)
-                    }
+                coroutine.withContext {
+                    val data = tmdbDriver.getList(backendPage + 1)
+                    data.forEach { item -> database.moviesListDao().insert(item) }
+                    data
                 }
             } else {
                 dataFromDb
             } ?: listOf()
-            moviesListPage.postValue(DataChunk(firstPosition, data))
+            moviesListPage.postValue(DataChunk(positionRange.first, data))
+            currentRequest = null
         }
     }
 

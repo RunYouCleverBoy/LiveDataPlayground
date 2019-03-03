@@ -14,7 +14,7 @@ import com.squareup.picasso.Picasso
  * Description:
  * Created by shmuel on 2.3.19.
  */
-class GalleryFragmentAdapter(viewModel: MoviesViewModel) :
+class GalleryFragmentAdapter(viewModel: MoviesViewModel, private val wantMore: (IntRange) -> Unit) :
     RecyclerView.Adapter<GalleryFragmentAdapter.EntryViewHolder>() {
     private val cache = LruCache<Int, OneMovieEntity>(100)
     private var dataSize = 0
@@ -34,11 +34,17 @@ class GalleryFragmentAdapter(viewModel: MoviesViewModel) :
         return EntryViewHolder(view)
     }
 
+    // Request one more to make sure the next page is requested
     override fun getItemCount() = dataSize
     override fun onBindViewHolder(holder: EntryViewHolder, position: Int) {
-        // TODO: Glide
-        val url: String = cache[position].posterUri
-        Picasso.get().load(url).into(holder.imageView)
+        val oneMovieEntity = cache[position]
+        if (oneMovieEntity != null) {
+            val url: String = oneMovieEntity.posterUri
+            Picasso.get().load(url).into(holder.imageView)
+            (position..(position + 10)).find { cache[it] == null }?.let { pos -> wantMore(pos..(pos + 10)) }
+        } else {
+            wantMore(position..(position + 10))
+        }
     }
 
     class EntryViewHolder(view: ImageView) : RecyclerView.ViewHolder(view) {
