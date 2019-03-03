@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blahblah.livedataplayground.R
 import com.blahblah.livedataplayground.fragments.adapters.GalleryFragmentAdapter
+import com.blahblah.livedataplayground.model.OneMovieEntity
 import com.blahblah.livedataplayground.viewmodel.MoviesViewModel
 
 /**
@@ -18,6 +19,8 @@ import com.blahblah.livedataplayground.viewmodel.MoviesViewModel
  */
 class GalleryFragment : Fragment() {
     private val viewModel by lazy { MoviesViewModel.instance }
+    var interactionLambda: (what: Interaction) -> Unit = {}
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val orientation = activity?.resources?.configuration?.orientation
         val numColumns = when (orientation) {
@@ -28,9 +31,13 @@ class GalleryFragment : Fragment() {
         val view = inflater.inflate(R.layout.gallery_layout, container, false)
         val gallery: RecyclerView = view.findViewById(R.id.galleryRecycler)
         gallery.adapter = GalleryFragmentAdapter(viewModel ?: return null, this::onWantMore)
+        { item -> interactionLambda(MovieClicked(item)) }
         gallery.layoutManager = GridLayoutManager(activity, numColumns)
         return view
     }
+
+    interface Interaction
+    data class MovieClicked(val oneMovieEntity: OneMovieEntity) : Interaction
 
     private fun onWantMore(position: IntRange) {
         viewModel?.fetch(position)

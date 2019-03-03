@@ -8,16 +8,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.blahblah.livedataplayground.R
 import com.blahblah.livedataplayground.model.OneMovieEntity
 import com.blahblah.livedataplayground.viewmodel.MoviesViewModel
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 
 /**
  * Description:
  * Created by shmuel on 2.3.19.
  */
-class GalleryFragmentAdapter(viewModel: MoviesViewModel, private val wantMore: (IntRange) -> Unit) :
+class GalleryFragmentAdapter(
+    viewModel: MoviesViewModel,
+    private val wantMore: (IntRange) -> Unit,
+    private val onItemSelected: (OneMovieEntity) -> Unit
+) :
     RecyclerView.Adapter<GalleryFragmentAdapter.EntryViewHolder>() {
     private val cache = LruCache<Int, OneMovieEntity>(100)
     private var dataSize = 0
+    private var renderer = Picasso.get()
 
     init {
         viewModel.moviesListPage.observeForever { chunk ->
@@ -40,11 +46,17 @@ class GalleryFragmentAdapter(viewModel: MoviesViewModel, private val wantMore: (
         val oneMovieEntity = cache[position]
         if (oneMovieEntity != null) {
             val url: String = oneMovieEntity.posterUri
-            Picasso.get().load(url).into(holder.imageView)
+            renderer.load(url).networkPolicy(NetworkPolicy.OFFLINE).into(holder.imageView)
             (position..(position + 10)).find { cache[it] == null }?.let { pos -> wantMore(pos..(pos + 10)) }
+            holder.imageView.setOnClickListener { onItemSelected(oneMovieEntity) }
         } else {
             wantMore(position..(position + 10))
         }
+    }
+
+    override fun onViewRecycled(holder: EntryViewHolder) {
+        super.onViewRecycled(holder)
+        renderer.cancelRequest(holder.imageView)
     }
 
     class EntryViewHolder(view: ImageView) : RecyclerView.ViewHolder(view) {

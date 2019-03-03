@@ -23,4 +23,7 @@ interface EntitiesDao {
 
     @Query("SELECT * FROM MovieEntry limit :count offset :fromRow")
     fun getAllMovies(fromRow: Int = 0, count: Int = 10): LiveData<List<OneMovieEntity>>
+
+    @Query("SELECT MAX(cameFromPage) FROM MovieEntry")
+    fun getMaxPage(): LiveData<Int>
 }
