@@ -58,9 +58,8 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
             }
 
             val data = if (dataFromDb?.size ?: 0 < intervalSize) {
-                val backendPage = dataFromDb?.lastOrNull()?.cameFromPage ?: 0
                 coroutine.withContext {
-                    val data = tmdbDriver.getList(backendPage + 1)
+                    val data = tmdbDriver.getList(maxPage + 1)
                     data.forEach { item -> database.moviesListDao().insert(item) }
                     data
                 }
@@ -74,7 +73,7 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
 
     companion object {
         fun init(application: Application): MoviesViewModel {
-            return MoviesViewModel(application).also { instance = it }
+            return instance ?: MoviesViewModel(application).also { instance = it }
         }
 
         var instance: MoviesViewModel? = null

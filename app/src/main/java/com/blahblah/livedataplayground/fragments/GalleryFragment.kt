@@ -30,7 +30,7 @@ class GalleryFragment : Fragment() {
         }
         val view = inflater.inflate(R.layout.gallery_layout, container, false)
         val gallery: RecyclerView = view.findViewById(R.id.galleryRecycler)
-        gallery.adapter = GalleryFragmentAdapter(viewModel ?: return null, this::onWantMore)
+        gallery.adapter = GalleryFragmentAdapter(lifecycle, viewModel ?: return null, this::onWantMore)
         { item -> interactionLambda(MovieClicked(item)) }
         gallery.layoutManager = GridLayoutManager(activity, numColumns)
         return view
