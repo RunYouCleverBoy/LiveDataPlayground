@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">LiveData playground</string>
     <string name="popularityTemplate">Popularity: %d</string>
+    <string name="galleryFragmentTagName">GalleryFragment</string>
 </resources>

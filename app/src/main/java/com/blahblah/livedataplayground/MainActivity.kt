@@ -14,21 +14,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         model = MoviesViewModel.init(application)
         setContentView(R.layout.activity_main)
-        val galleryFragment = GalleryFragment()
-        galleryFragment.interactionLambda = { what: GalleryFragment.Interaction ->
+        setupTheGalleryFragment()
+    }
+
+    private fun setupTheGalleryFragment() {
+        val galleryFragment =
+            supportFragmentManager.findFragmentByTag(getString(R.string.galleryFragmentTagName)) as? GalleryFragment
+        galleryFragment?.setupWith(viewModel = model, interactionFunction = { what: GalleryFragment.Interaction ->
             when (what) {
                 is GalleryFragment.MovieClicked -> showMovieDetails(what.oneMovieEntity)
             }
-        }
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .add(R.id.galleryContainer, galleryFragment, "Gallery")
-                .commit()
-        }
+        })
     }
 
     private fun showMovieDetails(oneMovieEntity: OneMovieEntity) {
-        CoroutineWrapper().launchUI {
+        CoroutineWrapper.launchUI {
             val fragment = supportFragmentManager.findFragmentByTag(SynopsisFragment.TAG) as? SynopsisFragment
                 ?: SynopsisFragment()
                     .also {

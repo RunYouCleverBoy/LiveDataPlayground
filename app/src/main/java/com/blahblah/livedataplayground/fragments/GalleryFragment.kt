@@ -11,15 +11,23 @@ import androidx.recyclerview.widget.RecyclerView
 import com.blahblah.livedataplayground.R
 import com.blahblah.livedataplayground.fragments.adapters.GalleryFragmentAdapter
 import com.blahblah.livedataplayground.model.OneMovieEntity
+import com.blahblah.livedataplayground.utils.CoroutineWrapper
 import com.blahblah.livedataplayground.viewmodel.MoviesViewModel
+import kotlinx.coroutines.CompletableDeferred
 
 /**
  * Description:
  * Created by shmuel on 2.3.19.
  */
 class GalleryFragment : Fragment() {
-    private val viewModel by lazy { MoviesViewModel.instance }
-    var interactionLambda: (what: Interaction) -> Unit = {}
+    interface Interaction
+    data class MovieClicked(val oneMovieEntity: OneMovieEntity) : Interaction
+
+    private var interactionLambda: (what: Interaction) -> Unit = {}
+
+    private data class SetupData(val viewModel: MoviesViewModel, val interactionListener: (Interaction) -> Unit)
+
+    private val setupBlocker = CompletableDeferred<SetupData>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val orientation = activity?.resources?.configuration?.orientation
@@ -29,17 +37,24 @@ class GalleryFragment : Fragment() {
             else -> 4
         }
         val view = inflater.inflate(R.layout.gallery_layout, container, false)
-        val gallery: RecyclerView = view.findViewById(R.id.galleryRecycler)
-        gallery.adapter = GalleryFragmentAdapter(lifecycle, viewModel ?: return null, this::onWantMore)
-        { item -> interactionLambda(MovieClicked(item)) }
-        gallery.layoutManager = GridLayoutManager(activity, numColumns)
+        CoroutineWrapper.launchUI {
+            val gallery: RecyclerView = view.findViewById(R.id.galleryRecycler)
+            val (viewModel, interactionListener) = setupBlocker.await()
+            interactionLambda = interactionListener
+            gallery.adapter = GalleryFragmentAdapter(lifecycle, viewModel, this@GalleryFragment::onWantMore)
+            { item -> interactionLambda(MovieClicked(item)) }
+            gallery.layoutManager = GridLayoutManager(activity, numColumns)
+        }
         return view
     }
 
-    interface Interaction
-    data class MovieClicked(val oneMovieEntity: OneMovieEntity) : Interaction
-
     private fun onWantMore(position: IntRange) {
-        viewModel?.fetch(position)
+        CoroutineWrapper.launchUI {
+            setupBlocker.await().viewModel.fetch(position)
+        }
+    }
+
+    fun setupWith(viewModel: MoviesViewModel, interactionFunction: (Interaction) -> Unit) {
+        setupBlocker.complete(SetupData(viewModel, interactionFunction))
     }
 }

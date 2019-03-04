@@ -39,7 +39,7 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
 
     var currentRequest: IntRange? = null
     fun fetch(positionRange: IntRange = 0 until PAGE_SIZE) {
-        coroutine.launchUI {
+        CoroutineWrapper.launchUI {
             if (currentRequest?.let { positionRange.first in it && positionRange.last in it } == true) {
                 return@launchUI
             }

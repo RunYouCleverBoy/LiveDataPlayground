@@ -6,15 +6,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
-    <FrameLayout
+    <fragment
+            android:name="com.blahblah.livedataplayground.fragments.GalleryFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:id="@+id/galleryContainer" app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/galleryContainer"
+            android:tag="@string/galleryFragmentTagName"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-    </FrameLayout>
+    </fragment>
     <FrameLayout
             android:layout_width="0dp"
             android:layout_height="0dp"

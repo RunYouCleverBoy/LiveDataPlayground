@@ -32,7 +32,7 @@ class GalleryFragmentAdapter(
             dataSize = Math.max(dataSize, chunk.firstPosition + chunk.data.size)
             notifyDataSetChanged()
         })
-        viewModel.fetch()
+        wantMore.invoke(0..40)
     }
 
 
@@ -58,7 +58,9 @@ class GalleryFragmentAdapter(
                 .error(R.drawable.ic_portable_wifi_off)
                 .into(holder.imageView)
             (position..(position + 10)).find { cache[it] == null }?.let { pos -> wantMore(pos..(pos + 10)) }
-            holder.imageView.setOnClickListener { onItemSelected(oneMovieEntity) }
+            holder.imageView.setOnClickListener {
+                onItemSelected(oneMovieEntity)
+            }
         } else {
             wantMore(position..(position + 10))
         }
