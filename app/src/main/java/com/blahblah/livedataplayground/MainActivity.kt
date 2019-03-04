@@ -20,9 +20,11 @@ class MainActivity : AppCompatActivity() {
                 is GalleryFragment.MovieClicked -> showMovieDetails(what.oneMovieEntity)
             }
         }
-        supportFragmentManager.beginTransaction()
-            .add(R.id.galleryContainer, galleryFragment, "Gallery")
-            .commit()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.galleryContainer, galleryFragment, "Gallery")
+                .commit()
+        }
     }
 
     private fun showMovieDetails(oneMovieEntity: OneMovieEntity) {
