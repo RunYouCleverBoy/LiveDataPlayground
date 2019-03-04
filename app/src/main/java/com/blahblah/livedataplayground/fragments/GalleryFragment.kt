@@ -24,8 +24,8 @@ class GalleryFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val orientation = activity?.resources?.configuration?.orientation
         val numColumns = when (orientation) {
-            Configuration.ORIENTATION_LANDSCAPE -> 8
-            Configuration.ORIENTATION_PORTRAIT -> 4
+            Configuration.ORIENTATION_LANDSCAPE -> 6
+            Configuration.ORIENTATION_PORTRAIT -> 3
             else -> 4
         }
         val view = inflater.inflate(R.layout.gallery_layout, container, false)

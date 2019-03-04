@@ -52,7 +52,11 @@ class GalleryFragmentAdapter(
         if (oneMovieEntity != null) {
             val url: String = oneMovieEntity.posterUri
             holder.imageView.tag = position
-            renderer.load(url).into(holder.imageView)
+            renderer
+                .load(url)
+                .placeholder(R.drawable.ic_movie)
+                .error(R.drawable.ic_portable_wifi_off)
+                .into(holder.imageView)
             (position..(position + 10)).find { cache[it] == null }?.let { pos -> wantMore(pos..(pos + 10)) }
             holder.imageView.setOnClickListener { onItemSelected(oneMovieEntity) }
         } else {

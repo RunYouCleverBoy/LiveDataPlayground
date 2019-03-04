@@ -60,6 +60,9 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
             val data = if (dataFromDb?.size ?: 0 < intervalSize) {
                 coroutine.withContext {
                     val data = tmdbDriver.getList(maxPage + 1)
+                    if (data.isNotEmpty()) {
+                        maxPage++
+                    }
                     data.forEach { item -> database.moviesListDao().insert(item) }
                     data
                 }
