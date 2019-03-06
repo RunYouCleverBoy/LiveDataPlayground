@@ -12,10 +12,11 @@ import com.blahblah.livedataplayground.viewmodel.MoviesViewModel
 import com.squareup.picasso.Picasso
 
 /**
- * Description:
+ * Description: Gallery adapter
  * Created by shmuel on 2.3.19.
  */
 class GalleryFragmentAdapter(
+    private var autoSelectFirst: Boolean,
     private val lifeCycle: Lifecycle,
     viewModel: MoviesViewModel,
     private val wantMore: (IntRange) -> Unit,
@@ -28,9 +29,13 @@ class GalleryFragmentAdapter(
 
     init {
         viewModel.moviesListPage.observe({ lifeCycle }, { chunk ->
+            val wasEmpty = cache.size() == 0 && chunk.data.isNotEmpty()
             chunk.data.forEachIndexed { i, entity -> cache.put(i + chunk.firstPosition, entity) }
             dataSize = Math.max(dataSize, chunk.firstPosition + chunk.data.size)
             notifyDataSetChanged()
+            if (autoSelectFirst && wasEmpty) {
+                onItemSelected(chunk.data[0])
+            }
         })
         wantMore.invoke(0..40)
     }

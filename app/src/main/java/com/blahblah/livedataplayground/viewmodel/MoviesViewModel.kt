@@ -9,6 +9,7 @@ import com.blahblah.livedataplayground.model.MoviesDatabase
 import com.blahblah.livedataplayground.model.OneMovieEntity
 import com.blahblah.livedataplayground.model.TMDBApi
 import com.blahblah.livedataplayground.utils.CoroutineWrapper
+import com.blahblah.livedataplayground.utils.contains
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
@@ -16,7 +17,7 @@ import kotlin.coroutines.suspendCoroutine
 
 
 /**
- * Description:
+ * Description: View Model for the app
  * Created by shmuel on 27.2.19.
  */
 class MoviesViewModel private constructor(application: Application) : AndroidViewModel(application) {
@@ -32,15 +33,15 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
 
     init {
         val initialData = database.moviesListDao().getAllMovies(0, 10).value ?: listOf()
-        database.moviesListDao().getMaxPage().observeForever { page -> maxPage = page }
+        database.moviesListDao().getMaxPage().observeForever { page -> maxPage = page ?: 0 }
         moviesListPage = MutableLiveData(DataChunk(0, initialData))
-        fetch()
+        fetch(0..256)
     }
 
     var currentRequest: IntRange? = null
     fun fetch(positionRange: IntRange = 0 until PAGE_SIZE) {
         CoroutineWrapper.launchUI {
-            if (currentRequest?.let { positionRange.first in it && positionRange.last in it } == true) {
+            if (currentRequest?.contains(positionRange) == true) {
                 return@launchUI
             }
 

@@ -1,5 +1,6 @@
 package com.blahblah.livedataplayground
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.blahblah.livedataplayground.fragments.GalleryFragment
@@ -7,6 +8,7 @@ import com.blahblah.livedataplayground.fragments.SynopsisFragment
 import com.blahblah.livedataplayground.model.OneMovieEntity
 import com.blahblah.livedataplayground.utils.CoroutineWrapper
 import com.blahblah.livedataplayground.viewmodel.MoviesViewModel
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var model: MoviesViewModel
@@ -20,12 +22,20 @@ class MainActivity : AppCompatActivity() {
     private fun setupTheGalleryFragment() {
         val galleryFragment =
             supportFragmentManager.findFragmentByTag(getString(R.string.galleryFragmentTagName)) as? GalleryFragment
+        galleryFragment?.autoSelectFirst = isTablet()
         galleryFragment?.setupWith(viewModel = model, interactionFunction = { what: GalleryFragment.Interaction ->
             when (what) {
                 is GalleryFragment.MovieClicked -> showMovieDetails(what.oneMovieEntity)
             }
         })
     }
+
+    private fun isTablet() = when (resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK) {
+        Configuration.SCREENLAYOUT_SIZE_LARGE -> true
+        Configuration.SCREENLAYOUT_SIZE_XLARGE -> true
+        else -> false
+    }
+
 
     private fun showMovieDetails(oneMovieEntity: OneMovieEntity) {
         CoroutineWrapper.launchUI {

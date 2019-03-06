@@ -2,6 +2,7 @@ package com.blahblah.livedataplayground.model
 
 import android.content.Context
 import com.blahblah.livedataplayground.R
+import com.blahblah.livedataplayground.utils.addToIfNotEmpty
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONException
@@ -13,8 +14,6 @@ import java.io.IOException
  * Created by shmuel on 28.2.19.
  */
 class TMDBApi(context: Context) {
-    //    private val metadata =
-//        context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA).metaData
     private val apiKey = context.getString(R.string.tmbdKey)
     private val baseUrl = "https://api.themoviedb.org/"
     private val client = OkHttpClient()
@@ -47,16 +46,5 @@ class TMDBApi(context: Context) {
         } catch (exception: JSONException) {
             listOf()
         }
-
-
     }
 }
-
-private fun String.addToIfNotEmpty(prefix: String): String {
-    return if (prefix.isNotEmpty()) {
-        prefix + this
-    } else {
-        ""
-    }
-}
-
