@@ -39,6 +39,13 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
     }
 
     var currentRequest: IntRange? = null
+
+    /**
+     * Fetch entries by [positionRange]. If not available in the database, fetch from TMDB. Data is returned with the livedata
+     *
+     * @param positionRange range of positions
+     *
+     */
     fun fetch(positionRange: IntRange = 0 until PAGE_SIZE) {
         CoroutineWrapper.launchUI {
             if (currentRequest?.contains(positionRange) == true) {

@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * Description:
+ * Description: One movie entry, and the class that is propagated to describe a movie
  * Created by shmuel on 27.2.19.
  */
 @Entity(tableName = "MovieEntry")
@@ -16,5 +16,6 @@ class OneMovieEntity {
     var backdropUri: String = ""
     var synopsis: String = ""
     var popularity: Double = 0.0
+    var voteAverage: Double = 0.0
     var cameFromPage: Int = 0
 }

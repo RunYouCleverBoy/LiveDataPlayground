@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 
 /**
- * Description:
+ * Description: The dao for one movie
  * Created by shmuel on 27.2.19.
  */
 @Dao

@@ -17,7 +17,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlin.math.roundToInt
 
 /**
- * Description:
+ * Description: Fragment for the gallery
  * Created by shmuel on 2.3.19.
  */
 class GalleryFragment : Fragment() {

@@ -5,15 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.blahblah.livedataplayground.R
 import com.blahblah.livedataplayground.model.OneMovieEntity
+import com.blahblah.livedataplayground.utils.clipTo
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CompletableDeferred
 
 /**
- * Description:
+ * Description: A fragment where synopsis is displayed
  * Created by shmuel on 3.3.19.
  */
 class SynopsisFragment : Fragment() {
@@ -32,7 +34,12 @@ class SynopsisFragment : Fragment() {
             Picasso.get().load(oneMovieEntity.backdropUri).into(backDrop)
             synopsis.text = oneMovieEntity.synopsis
             popularity.text = getString(R.string.popularityTemplate, oneMovieEntity.popularity.toInt())
+            ratingBar.rating = transformRating(oneMovieEntity.voteAverage, ratingBar.numStars)
         }
+    }
+
+    private fun transformRating(voteAverage: Double, numStars: Int): Float {
+        return (voteAverage * numStars / 10.0).toFloat().clipTo(0, numStars)
     }
 
     private class Holder(view: View) {
@@ -40,6 +47,7 @@ class SynopsisFragment : Fragment() {
         var backDrop: ImageView = view.findViewById(R.id.synopsisMovieBackdrop)
         var synopsis: TextView = view.findViewById(R.id.synopsisMovieSynopsis)
         var popularity: TextView = view.findViewById(R.id.synopsisMoviePopularity)
+        var ratingBar: RatingBar = view.findViewById(R.id.ratingBar)
     }
 
     companion object {

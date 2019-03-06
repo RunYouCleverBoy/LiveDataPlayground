@@ -9,7 +9,6 @@ import com.blahblah.livedataplayground.model.OneMovieEntity
 import com.blahblah.livedataplayground.utils.CoroutineWrapper
 import com.blahblah.livedataplayground.viewmodel.MoviesViewModel
 
-
 class MainActivity : AppCompatActivity() {
     private lateinit var model: MoviesViewModel
     override fun onCreate(savedInstanceState: Bundle?) {

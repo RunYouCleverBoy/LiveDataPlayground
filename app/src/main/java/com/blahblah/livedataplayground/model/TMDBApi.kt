@@ -10,7 +10,7 @@ import org.json.JSONObject
 import java.io.IOException
 
 /**
- * Description:
+ * Description: Driver for TMDB
  * Created by shmuel on 28.2.19.
  */
 class TMDBApi(context: Context) {
@@ -40,6 +40,7 @@ class TMDBApi(context: Context) {
                     synopsis = movieJson.optString("overview", "N/A")
                     movieName = movieJson.optString("title", "N/A")
                     popularity = movieJson.optDouble("popularity", 0.0)
+                    voteAverage = movieJson.optDouble("vote_average", 0.0)
                     cameFromPage = page
                 }
             }
