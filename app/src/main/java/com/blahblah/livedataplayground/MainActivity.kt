@@ -35,16 +35,18 @@ class MainActivity : AppCompatActivity() {
         else -> false
     }
 
-
     private fun showMovieDetails(oneMovieEntity: OneMovieEntity) {
         CoroutineWrapper.launchUI {
             val fragment = supportFragmentManager.findFragmentByTag(SynopsisFragment.TAG) as? SynopsisFragment
                 ?: SynopsisFragment()
                     .also {
-                        supportFragmentManager.beginTransaction()
+                        val transaction = supportFragmentManager.beginTransaction()
                             .replace(R.id.synopsisContainer, it, SynopsisFragment.TAG)
-                            .addToBackStack(SynopsisFragment.TAG)
-                            .commit()
+                        if (!isTablet()) {
+                            transaction.addToBackStack(SynopsisFragment.TAG)
+                        }
+                        transaction.commit()
+
                     }
             fragment.applyEntity(oneMovieEntity)
         }

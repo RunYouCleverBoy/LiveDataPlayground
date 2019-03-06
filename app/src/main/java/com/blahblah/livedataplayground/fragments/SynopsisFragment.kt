@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.blahblah.livedataplayground.R
 import com.blahblah.livedataplayground.model.OneMovieEntity
+import com.blahblah.livedataplayground.utils.CoroutineWrapper.Companion.launchUI
 import com.blahblah.livedataplayground.utils.clipTo
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CompletableDeferred
@@ -21,10 +22,27 @@ import kotlinx.coroutines.CompletableDeferred
 class SynopsisFragment : Fragment() {
     private lateinit var holder: Holder
     private val holderPromise = CompletableDeferred<Holder>()
+    private var lastMovieEntry: OneMovieEntity? = null
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.synopsis_view, container, false)
         holder = Holder(view)
         holderPromise.complete(holder)
+
+        // TODO: Migrate it all to parcelable and test if it does not break anything
+        savedInstanceState?.let { outState ->
+            val oneMovieEntity = OneMovieEntity().apply {
+                movieName = outState.getString("movieName", "")
+                backdropUri = outState.getString("backDropUri", "")
+                synopsis = outState.getString("synoposis", "")
+                popularity = outState.getDouble("popularity", 0.0)
+                voteAverage = outState.getDouble("voteAverage", 0.0)
+            }
+
+            launchUI {
+                applyEntity(oneMovieEntity)
+            }
+        }
+
         return view
     }
 
@@ -35,11 +53,23 @@ class SynopsisFragment : Fragment() {
             synopsis.text = oneMovieEntity.synopsis
             popularity.text = getString(R.string.popularityTemplate, oneMovieEntity.popularity.toInt())
             ratingBar.rating = transformRating(oneMovieEntity.voteAverage, ratingBar.numStars)
+            lastMovieEntry = oneMovieEntity
         }
     }
 
     private fun transformRating(voteAverage: Double, numStars: Int): Float {
-        return (voteAverage * numStars / 10.0).toFloat().clipTo(0, numStars)
+        return (voteAverage * numStars / 10.0 + 0.5).toFloat().clipTo(0, numStars)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(lastMovieEntry?.run {
+            outState.putString("movieName", movieName)
+            outState.putString("backDropUri", backdropUri)
+            outState.putString("synoposis", synopsis)
+            outState.putDouble("popularity", popularity)
+            outState.putDouble("voteAverage", voteAverage)
+            outState
+        } ?: outState)
     }
 
     private class Holder(view: View) {

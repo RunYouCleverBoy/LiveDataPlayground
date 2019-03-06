@@ -61,6 +61,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/ratingBar" android:isIndicator="true"
                 style="?attr/ratingBarStyleIndicator"
+                android:stepSize="0.2"
                 app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
                 app:layout_constraintStart_toEndOf="@+id/synopsisMoviePopularity"
                 app:layout_constraintHorizontal_bias="0.5"
