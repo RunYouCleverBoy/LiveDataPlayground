@@ -26,8 +26,8 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
         Room.databaseBuilder(application, MoviesDatabase::class.java, "movies_property_db").build()
     private val tmdbDriver = TMDBApi(application)
     private var maxPage = 0
+    private val errorRegistrar = SimpleStrongListener<ErrorType>()
     data class DataChunk(val firstPosition: Int, val data: List<OneMovieEntity>)
-
 
     val moviesListPage: MutableLiveData<DataChunk>
 
@@ -81,6 +81,9 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
             currentRequest = null
         }
     }
+
+    fun addOnErrorListener(onErrorListener: (ErrorType) -> Unit) = errorRegistrar.register(onErrorListener)
+    fun removeOnErrorListener(handle: Int) = errorRegistrar.unRegister(handle)
 
     companion object {
         fun init(application: Application): MoviesViewModel {

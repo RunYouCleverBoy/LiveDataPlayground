@@ -33,7 +33,7 @@ class SynopsisFragment : Fragment() {
             val oneMovieEntity = OneMovieEntity().apply {
                 movieName = outState.getString("movieName", "")
                 backdropUri = outState.getString("backDropUri", "")
-                synopsis = outState.getString("synoposis", "")
+                synopsis = outState.getString("synopsis", "")
                 popularity = outState.getDouble("popularity", 0.0)
                 voteAverage = outState.getDouble("voteAverage", 0.0)
             }
@@ -65,7 +65,7 @@ class SynopsisFragment : Fragment() {
         super.onSaveInstanceState(lastMovieEntry?.run {
             outState.putString("movieName", movieName)
             outState.putString("backDropUri", backdropUri)
-            outState.putString("synoposis", synopsis)
+            outState.putString("synopsis", synopsis)
             outState.putDouble("popularity", popularity)
             outState.putDouble("voteAverage", voteAverage)
             outState

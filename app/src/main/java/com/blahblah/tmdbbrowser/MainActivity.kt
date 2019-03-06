@@ -2,27 +2,36 @@ package com.blahblah.tmdbbrowser
 
 import android.content.res.Configuration
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.blahblah.tmdbbrowser.fragments.GalleryFragment
 import com.blahblah.tmdbbrowser.fragments.SynopsisFragment
 import com.blahblah.tmdbbrowser.model.OneMovieEntity
 import com.blahblah.tmdbbrowser.utils.CoroutineWrapper
+import com.blahblah.tmdbbrowser.viewmodel.ErrorType
 import com.blahblah.tmdbbrowser.viewmodel.MoviesViewModel
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var model: MoviesViewModel
+    private lateinit var viewModel: MoviesViewModel
+    private var errorHandle = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        model = MoviesViewModel.init(application)
+        viewModel = MoviesViewModel.init(application)
+        errorHandle = viewModel.addOnErrorListener(this::onError)
         setContentView(R.layout.activity_main)
         setupTheGalleryFragment()
+    }
+
+    override fun onDestroy() {
+        viewModel.removeOnErrorListener(errorHandle)
+        super.onDestroy()
     }
 
     private fun setupTheGalleryFragment() {
         val galleryFragment =
             supportFragmentManager.findFragmentByTag(getString(R.string.galleryFragmentTagName)) as? GalleryFragment
         galleryFragment?.autoSelectFirst = isTablet()
-        galleryFragment?.setupWith(viewModel = model, interactionFunction = { what: GalleryFragment.Interaction ->
+        galleryFragment?.setupWith(viewModel = viewModel, interactionFunction = { what: GalleryFragment.Interaction ->
             when (what) {
                 is GalleryFragment.MovieClicked -> showMovieDetails(what.oneMovieEntity)
             }
@@ -33,6 +42,15 @@ class MainActivity : AppCompatActivity() {
         Configuration.SCREENLAYOUT_SIZE_LARGE -> true
         Configuration.SCREENLAYOUT_SIZE_XLARGE -> true
         else -> false
+    }
+
+    private fun onError(errorType: ErrorType) {
+        val message = when (errorType) {
+            ErrorType.CANNOT_FETCH_DATA -> getString(R.string.cannotFetchData)
+        }
+        CoroutineWrapper.launchUI {
+            AlertDialog.Builder(this@MainActivity).setTitle(R.string.error).setMessage(message).show()
+        }
     }
 
     private fun showMovieDetails(oneMovieEntity: OneMovieEntity) {
