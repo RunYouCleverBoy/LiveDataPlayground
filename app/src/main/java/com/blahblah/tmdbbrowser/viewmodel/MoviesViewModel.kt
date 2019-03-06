@@ -1,15 +1,15 @@
-package com.blahblah.livedataplayground.viewmodel
+package com.blahblah.tmdbbrowser.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.room.Room
-import com.blahblah.livedataplayground.model.MoviesDatabase
-import com.blahblah.livedataplayground.model.OneMovieEntity
-import com.blahblah.livedataplayground.model.TMDBApi
-import com.blahblah.livedataplayground.utils.CoroutineWrapper
-import com.blahblah.livedataplayground.utils.contains
+import com.blahblah.tmdbbrowser.model.MoviesDatabase
+import com.blahblah.tmdbbrowser.model.OneMovieEntity
+import com.blahblah.tmdbbrowser.model.TMDBApi
+import com.blahblah.tmdbbrowser.utils.CoroutineWrapper
+import com.blahblah.tmdbbrowser.utils.contains
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume

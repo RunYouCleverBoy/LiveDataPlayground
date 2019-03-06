@@ -1,4 +1,4 @@
-package com.blahblah.livedataplayground.model
+package com.blahblah.tmdbbrowser.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

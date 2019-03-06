@@ -1,8 +1,8 @@
-package com.blahblah.livedataplayground.model
+package com.blahblah.tmdbbrowser.model
 
 import android.content.Context
-import com.blahblah.livedataplayground.R
-import com.blahblah.livedataplayground.utils.addToIfNotEmpty
+import com.blahblah.tmdbbrowser.R
+import com.blahblah.tmdbbrowser.utils.addToIfNotEmpty
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONException

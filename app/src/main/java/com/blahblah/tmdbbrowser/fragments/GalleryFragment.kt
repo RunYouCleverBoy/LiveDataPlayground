@@ -1,4 +1,4 @@
-package com.blahblah.livedataplayground.fragments
+package com.blahblah.tmdbbrowser.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,11 +8,11 @@ import android.view.ViewTreeObserver
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.blahblah.livedataplayground.R
-import com.blahblah.livedataplayground.fragments.adapters.GalleryFragmentAdapter
-import com.blahblah.livedataplayground.model.OneMovieEntity
-import com.blahblah.livedataplayground.utils.CoroutineWrapper
-import com.blahblah.livedataplayground.viewmodel.MoviesViewModel
+import com.blahblah.tmdbbrowser.R
+import com.blahblah.tmdbbrowser.fragments.adapters.GalleryFragmentAdapter
+import com.blahblah.tmdbbrowser.model.OneMovieEntity
+import com.blahblah.tmdbbrowser.utils.CoroutineWrapper
+import com.blahblah.tmdbbrowser.viewmodel.MoviesViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlin.math.roundToInt
 

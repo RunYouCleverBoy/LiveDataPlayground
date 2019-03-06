@@ -1,4 +1,4 @@
-package com.blahblah.livedataplayground.utils
+package com.blahblah.tmdbbrowser.utils
 
 /**
  * Description: Type extensions

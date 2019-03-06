@@ -1,4 +1,4 @@
-package com.blahblah.livedataplayground.fragments.adapters
+package com.blahblah.tmdbbrowser.fragments.adapters
 
 import android.util.LruCache
 import android.view.LayoutInflater
@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
-import com.blahblah.livedataplayground.R
-import com.blahblah.livedataplayground.model.OneMovieEntity
-import com.blahblah.livedataplayground.viewmodel.MoviesViewModel
+import com.blahblah.tmdbbrowser.R
+import com.blahblah.tmdbbrowser.model.OneMovieEntity
+import com.blahblah.tmdbbrowser.viewmodel.MoviesViewModel
 import com.squareup.picasso.Picasso
 
 /**

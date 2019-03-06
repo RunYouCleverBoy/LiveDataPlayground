@@ -1,13 +1,13 @@
-package com.blahblah.livedataplayground
+package com.blahblah.tmdbbrowser
 
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.blahblah.livedataplayground.fragments.GalleryFragment
-import com.blahblah.livedataplayground.fragments.SynopsisFragment
-import com.blahblah.livedataplayground.model.OneMovieEntity
-import com.blahblah.livedataplayground.utils.CoroutineWrapper
-import com.blahblah.livedataplayground.viewmodel.MoviesViewModel
+import com.blahblah.tmdbbrowser.fragments.GalleryFragment
+import com.blahblah.tmdbbrowser.fragments.SynopsisFragment
+import com.blahblah.tmdbbrowser.model.OneMovieEntity
+import com.blahblah.tmdbbrowser.utils.CoroutineWrapper
+import com.blahblah.tmdbbrowser.viewmodel.MoviesViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var model: MoviesViewModel
