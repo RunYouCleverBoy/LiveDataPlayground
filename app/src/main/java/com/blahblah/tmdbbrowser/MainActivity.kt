@@ -17,14 +17,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = MoviesViewModel.init(application)
-        errorHandle = viewModel.addOnErrorListener(this::onError)
         setContentView(R.layout.activity_main)
         setupTheGalleryFragment()
     }
 
-    override fun onDestroy() {
+    override fun onPause() {
         viewModel.removeOnErrorListener(errorHandle)
-        super.onDestroy()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        errorHandle = viewModel.addOnErrorListener(this::onError)
     }
 
     private fun setupTheGalleryFragment() {

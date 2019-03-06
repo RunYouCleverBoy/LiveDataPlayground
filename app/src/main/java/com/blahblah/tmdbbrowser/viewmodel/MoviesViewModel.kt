@@ -70,6 +70,8 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
                     val data = tmdbDriver.getList(maxPage + 1)
                     if (data.isNotEmpty()) {
                         maxPage++
+                    } else if (dataFromDb?.isEmpty() != false) {
+                        errorRegistrar.callWith(ErrorType.CANNOT_FETCH_DATA)
                     }
                     data.forEach { item -> database.moviesListDao().insert(item) }
                     data
@@ -77,6 +79,8 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
             } else {
                 dataFromDb
             } ?: listOf()
+
+
             moviesListPage.postValue(DataChunk(positionRange.first, data))
             currentRequest = null
         }
