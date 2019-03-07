@@ -9,6 +9,7 @@ import com.blahblah.tmdbbrowser.model.MoviesDatabase
 import com.blahblah.tmdbbrowser.model.OneMovieEntity
 import com.blahblah.tmdbbrowser.model.TMDBApi
 import com.blahblah.tmdbbrowser.utils.CoroutineWrapper
+import com.blahblah.tmdbbrowser.utils.SimpleObserver
 import com.blahblah.tmdbbrowser.utils.contains
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
@@ -26,7 +27,7 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
         Room.databaseBuilder(application, MoviesDatabase::class.java, "movies_property_db").build()
     private val tmdbDriver = TMDBApi(application)
     private var maxPage = 0
-    private val errorRegistrar = SimpleStrongListener<ErrorType>()
+    private val errorRegistrar = SimpleObserver<ErrorType>()
     data class DataChunk(val firstPosition: Int, val data: List<OneMovieEntity>)
 
     val moviesListPage: MutableLiveData<DataChunk>
@@ -71,7 +72,7 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
                     if (data.isNotEmpty()) {
                         maxPage++
                     } else if (dataFromDb?.isEmpty() != false) {
-                        errorRegistrar.callWith(ErrorType.CANNOT_FETCH_DATA)
+                        errorRegistrar.notifyObservers(ErrorType.CANNOT_FETCH_DATA)
                     }
                     data.forEach { item -> database.moviesListDao().insert(item) }
                     data
@@ -86,8 +87,8 @@ class MoviesViewModel private constructor(application: Application) : AndroidVie
         }
     }
 
-    fun addOnErrorListener(onErrorListener: (ErrorType) -> Unit) = errorRegistrar.register(onErrorListener)
-    fun removeOnErrorListener(handle: Int) = errorRegistrar.unRegister(handle)
+    fun addOnErrorListener(onErrorListener: (ErrorType) -> Unit) = errorRegistrar.addObserver(onErrorListener)
+    fun removeOnErrorListener(handle: Int) = errorRegistrar.removeObserver(handle)
 
     companion object {
         fun init(application: Application): MoviesViewModel {
