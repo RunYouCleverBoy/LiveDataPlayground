@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * Description: Simple callback service
  *
  * As opposed to an Observable, the following callback service is based on a single param
- *  and manages the observers by handle. It is also typed.
+ *  and manages the observers by handle. It is also typed which makes it more convenient to use
  *
  * Created by shmuel on 6.3.19.
  * @param DT - Data type
