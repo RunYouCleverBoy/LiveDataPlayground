@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="tmbdKey">b34d0b7f7eafef562bbc0ee8db680740</string>
+    <string name="tmbdKey" translatable="false">b34d0b7f7eafef562bbc0ee8db680740</string>
 </resources>
